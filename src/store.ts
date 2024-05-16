@@ -1,13 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import todoReducer from "./features/todo/todoSlice";
-import peoplesReducer from "./features/people/people";
-import planetReducer from "./features/planet/planet";
+import userReducer from "./features/users/userSlice";
+// import planetReducer from "./features/planets/planetSlice";
 
 export const store = configureStore({
   reducer: {
     todos: todoReducer,
-    peoples: peoplesReducer,
-    planets: planetReducer,
+    users: userReducer,
+    // planets: planetReducer,
   },
 });
 
