@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../hooks";
-import { fetchUsers, setPage } from "../features/users/userSlice";
+import { fetchUsers, setPage, setSearch } from "../features/users/userSlice";
 
 const UserList: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -33,9 +33,16 @@ const UserList: React.FC = () => {
     }
   };
 
+  const handleSearch = (event) => {
+    dispatch(setSearch(event.target.value));
+  }
+
   return (
     <div className="users">
-      <h1>Users</h1>
+      <div style={{display: 'flex', alignItems: 'center'}}>
+        <h1 style={{marginRight: '20px'}}>Users</h1>
+        <input type="text" onKeyUp={(e) => handleSearch(e)} />  
+      </div>
       <div>
         {users.map((user: any) => (
           <div key={user.name} className="user-card">
