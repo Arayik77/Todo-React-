@@ -1,17 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../hooks";
-import { fetchUsers, setPage, setSearch } from "../features/users/userSlice";
+import React, { useEffect, useState } from "react";
+import useDebounce, { useAppDispatch, useAppSelector } from "../hooks";
+import { fetchUsers, setPage, setSearchQuery } from "../features/users/userSlice";
 
 const UserList: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { users, page, totalPages, loading, error } = useAppSelector(
+  const { users, page, totalPages, searchQuery, loading, error } = useAppSelector(
     (state) => state.users
   );
 
+  const [query, serQuery] = useState(searchQuery);
+  const deboucedQuery = useDebounce(query, 700);
+
   useEffect(() => {
-    dispatch(fetchUsers(page));
-  }, [dispatch, page]);
+    dispatch(fetchUsers({ page, searchQuery: deboucedQuery }));
+  }, [dispatch, page, deboucedQuery]);
 
   if (loading) {
     return <div className="loading">Loading...</div>;
@@ -33,15 +36,20 @@ const UserList: React.FC = () => {
     }
   };
 
-  const handleSearch = (event) => {
-    dispatch(setSearch(event.target.value));
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    serQuery(e.target.value);
+    dispatch(setSearchQuery(e.target.value));
   }
 
   return (
     <div className="users">
-      <div style={{display: 'flex', alignItems: 'center'}}>
-        <h1 style={{marginRight: '20px'}}>Users</h1>
-        <input type="text" onKeyUp={(e) => handleSearch(e)} />  
+      <h1>Users</h1>
+      <div>
+        <input type="text"
+          placeholder="Search users..."
+          value={searchQuery}
+          onChange={handleSearch} 
+        />
       </div>
       <div>
         {users.map((user: any) => (
