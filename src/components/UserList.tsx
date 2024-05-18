@@ -9,7 +9,7 @@ const UserList: React.FC = () => {
     (state) => state.users
   );
 
-  const [query, serQuery] = useState(searchQuery);
+  const [query, serchQuery] = useState(searchQuery);
   const deboucedQuery = useDebounce(query, 700);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const UserList: React.FC = () => {
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    serQuery(e.target.value);
+    serchQuery(e.target.value);
     dispatch(setSearchQuery(e.target.value));
   }
 

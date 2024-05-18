@@ -4,6 +4,7 @@ import axios from "axios";
 interface PlanetState {
     planets: unknown[];
     page: number;
+    searchQuery: string;
     totalPages: number;
     loading: boolean;
     error: string | null;
@@ -12,6 +13,7 @@ interface PlanetState {
 const initialState: PlanetState = {
     planets: [],
     page: 1,
+    searchQuery: '',
     totalPages: 1,
     loading: false,
     error: null,
@@ -19,9 +21,9 @@ const initialState: PlanetState = {
 
 const fetchPlanets = createAsyncThunk(
     "planets/fetchPlanets",
-    async (page: number) => {
+    async ({page, searchQuery} : { page: number, searchQuery: string}) => {
       const response = await axios.get(
-        `https://swapi.dev/api/planets/?page=${page}`
+        `https://swapi.dev/api/planets/?page=${page}&search=${searchQuery}`
       );
   
       return response.data;
@@ -34,6 +36,10 @@ const fetchPlanets = createAsyncThunk(
     reducers: {
       setPage(state, action) {
         state.page = action.payload;
+      },
+      setSearchQuery(state, action) {
+        state.searchQuery = action.payload;
+        state.page = 1;
       },
     },
     extraReducers: (builder) => {
@@ -55,7 +61,7 @@ const fetchPlanets = createAsyncThunk(
     },
   });
   
-  export const { setPage } = planetSlice.actions;
+  export const { setPage, setSearchQuery } = planetSlice.actions;
   export { fetchPlanets };
   
   export default planetSlice.reducer;

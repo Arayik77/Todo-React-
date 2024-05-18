@@ -1,17 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../hooks";
-import { fetchPlanets, setPage } from "../features/planets/planetsSlice";
+import React, { useEffect, useState } from "react";
+import useDebounce, { useAppDispatch, useAppSelector } from "../hooks";
+import { fetchPlanets, setPage, setSearchQuery } from "../features/planets/planetsSlice";
 
 const PlanetList: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { planets, page, totalPages, loading, error } = useAppSelector(
+  const { planets, page, totalPages, searchQuery, loading, error } = useAppSelector(
     (state) => state.planets
   );
 
+  const [query, serchQuery] = useState(searchQuery);
+  const deboucedQuery = useDebounce(query, 700);
+
   useEffect(() => {
-    dispatch(fetchPlanets(page));
-  }, [dispatch, page]);
+    dispatch(fetchPlanets({ page, searchQuery: deboucedQuery }));
+  }, [dispatch, page, deboucedQuery]);
 
   if (loading) {
     return <div className="loading">Loading...</div>;
@@ -33,9 +36,21 @@ const PlanetList: React.FC = () => {
     }
   };
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    serchQuery(e.target.value);
+    dispatch(setSearchQuery(e.target.value));
+  }
+
   return (
     <div className="users">
       <h1>Planets</h1>
+      <div>
+        <input type="text"
+          placeholder="Search users..."
+          value={searchQuery}
+          onChange={handleSearch} 
+        />
+      </div>
       <div>
         {planets.map((planet: any) => (
           <div key={planet.name} className="user-card">
